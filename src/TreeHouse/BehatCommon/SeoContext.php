@@ -200,8 +200,13 @@ class SeoContext extends RawMinkContext
         $element = $this->assertSession()->elementExists('css', 'link[rel=canonical]');
         $actual = $element->getAttribute('href');
         $parsed = parse_url($actual);
+        if (!array_key_exists('scheme', $parsed)) {
+            $actual = $parsed['path'];
+            $expected = $path;
+        } else {
+            $expected = sprintf('%s://%s%s', $parsed['scheme'], $parsed['host'], $path);
+        }
 
-        $expected = sprintf('%s://%s%s', $parsed['scheme'], $parsed['host'], $path);
         if (array_key_exists('query', $parsed)) {
             $expected .= '?' . $parsed['query'];
         }
